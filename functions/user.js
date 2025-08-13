@@ -2,7 +2,6 @@ import { Client, Databases } from "node-appwrite";
 
 export default async ({ req, res, log, error }) => {
     try {
-        // Init Appwrite Client
         const client = new Client()
             .setEndpoint(process.env.APPWRITE_ENDPOINT)
             .setProject(process.env.APPWRITE_PROJECT_ID)
@@ -11,7 +10,9 @@ export default async ({ req, res, log, error }) => {
         const databases = new Databases(client);
 
         // Parse user data from Appwrite trigger
-        const { $id: userId, name, email } = JSON.parse(req.bodyJson);
+        const { $id: userId, name, email } = req.bodyJson;
+
+        log(JSON.stringify(req.bodyJson));
 
         // Create profile document with the CORRECT data structure
         await databases.createDocument(
@@ -32,7 +33,7 @@ export default async ({ req, res, log, error }) => {
         return res.json({ success: true, message: "Profile created" });
 
     } catch (err) {
-        error(`Failed to create profile for ${req.payload}: ${err.message}`);
+        error(`Failed to create profile : ${err.message}`);
         return res.json({ success: false, error: err.message }, 400);
     }
 };
