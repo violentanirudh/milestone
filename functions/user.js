@@ -11,7 +11,7 @@ export default async ({ req, res, log, error }) => {
         const databases = new Databases(client);
 
         // Parse user data from Appwrite trigger
-        const { $id: userId, name, email } = JSON.parse(req.payload);
+        const { $id: userId, name, email } = JSON.parse(req.bodyJson);
 
         // Create profile document with the CORRECT data structure
         await databases.createDocument(
