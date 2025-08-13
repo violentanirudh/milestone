@@ -13,17 +13,18 @@ export default async ({ req, res, log, error }) => {
         // Parse user data from Appwrite trigger
         const { $id: userId, name, email } = JSON.parse(req.payload);
 
-        // Create profile document
+        // Create profile document with the CORRECT data structure
         await databases.createDocument(
             process.env.APPWRITE_DATABASE_ID,
             process.env.APPWRITE_PROFILES_COLLECTION_ID,
             userId,
             {
-                name: name || "Anonymous",
-                email,
-                interests: [],
-                upvoted: [],
-                bookmarked: []
+              userId: userId,
+              name: name || "Anonymous",
+              email: email,
+              interests: [],
+              upvoted: [],
+              bookmarked: []
             }
         );
 
@@ -31,7 +32,7 @@ export default async ({ req, res, log, error }) => {
         return res.json({ success: true, message: "Profile created" });
 
     } catch (err) {
-        error(err.message);
-        return res.json({ success: false, error: err.message });
+        error(`Failed to create profile for ${req.payload}: ${err.message}`);
+        return res.json({ success: false, error: err.message }, 400);
     }
 };
